@@ -1,2 +1,3 @@
-# fortran_2_project_md
-Fortram 2 - projekt MD
+# fortran 2 project
+
+Zde bude dokumentace k projektu.
