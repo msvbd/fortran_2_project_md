@@ -5,6 +5,7 @@ implicit none
     public:: Atom_obj 
         
     type Atom_obj  
-        real, allocatable:: Radius(:), Velocity(:), Mass(:), Force(:)
+        real, allocatable:: Radius(:), Velocity(:), Force(:)
+        real:: Mass
     end type Atom_obj 
 end module
