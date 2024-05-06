@@ -1,33 +1,54 @@
-module Box
-use Atom
+module Box_mod
+use Atom_mod
 implicit none 
     private 
     
-    public :: Box_obj, init_atoms
+    public :: Box_obj
     
     type Box_obj
-        real, allocatable:: dimensions(:) !of the box
+        real :: L(3) !of the box
         integer:: n !count of atoms
         type(Atom_obj), allocatable :: atoms(:)
+
+        contains
+            procedure :: init_atoms
+
     end type Box_obj
+
+    interface Box_obj
+        module procedure create_box
+    end interface Box_obj
 
     contains
 
-    subroutine init_atoms(box, atom_count, atom_positions, atom_velocities)
+    type(Box_obj) function create_box(L)
+        real, dimension(3) :: L
         type(Box_obj) :: box
-        integer:: atom_count, i
-        real, dimension(:,:) :: atom_positions, atom_velocities
-        
-        box%n = atom_count
 
-        allocate(box%atoms(atom_count))
+        box%L = L
+        box%n = 0
+
+        create_box = box
+    end function create_box
+
+    subroutine init_atoms(this, atom_count)
+        class(Box_obj),intent(inout) :: this
+        integer,intent(in) :: atom_count
+        integer :: i
+        real :: r(3)=[0.,0.,0.], v(3)=[0.,0.,0.], mass = 1.
+        
+        this%n = atom_count
+
+        allocate(this%atoms(atom_count))
 
         do i = 1, atom_count
-                allocate(box%atoms(i)%position(size(atom_positions, 2)))
-                allocate(box%atoms(i)%velocity(size(atom_velocities, 2)))
-            
-                box%atoms(i)%position = atom_positions(:,i)
-                box%atoms(i)%velocity = atom_velocities(:,i)
+            ! Initialize the atom's position
+            ! the code will be here
+
+            ! Initialize the atom's velocity
+            ! the code will be here
+
+            this%atoms(i) = Atom_obj(r, v, mass)
         end do
 
     end subroutine 
