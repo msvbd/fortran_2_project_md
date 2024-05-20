@@ -10,12 +10,18 @@ public:: particle_obj
     
     contains
     
-    subroutine init_force(compute_force)
-    implicit none 
-    type(Atom_obj) :: p1, p2
-    real:: compute_force
-    
-    end subroutine
+  function init_force(compute_force) result(output_force)
+      implicit none 
+      type(Atom_obj) :: p1, p2
+      real :: output_force
+      interface 
+          real function compute_force(p1, p2)
+              import :: Atom_obj
+              type(Atom_obj), intent(in) :: p1, p2
+          end function compute_force
+      end interface
+      output_force = compute_force(p1, p2) 
+   end function init_force
     
     function compute_force(p1,p2) 
         type(Atom_obj), intent(in) :: p1, p2
@@ -33,6 +39,8 @@ public:: particle_obj
         end do
 
         distance = sqrt(sum(dx**2))
+
+        !Here i should somehow call general func that will later respond to LJ, but how? 
         
     end function
     
