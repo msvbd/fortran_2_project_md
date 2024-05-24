@@ -1,61 +1,71 @@
 module Force_mod
 use Atom_mod
+use Box_mod
 implicit none 
 private
-public:: particle_obj
 
-    type particle_obj
-      type(Atom_obj):: Atom_obj 
-    end type particle_obj 
+interface
+    function force_fce(distance)
+        real, intent(in) :: distance
+        real :: force_fce
+    end function force_fce
+end interface
+
+procedure(force_fce), pointer :: force_fce_ptr => null()
+real :: L(3)
+
+public :: init_force, compute_forces
+
+contains
+!====================================================
+! function set the force_fce_ptr to the function that will be used to compute the force
+subroutine init_force(f_fce, box)
+    procedure(force_fce) :: f_fce
+    type(Box_obj), intent(in) :: box
+
+    force_fce_ptr => f_fce
+    L = box%L
     
-    contains
+end subroutine init_force
+!----------------------------------------------------
+function compute_force(p1,p2) 
+    type(Atom_obj), intent(in) :: p1, p2
+    real :: compute_force
+
+    real :: dx(size(p1%r))
+    integer:: i, dim
     
-  function init_force(compute_force) result(output_force)
-      implicit none 
-      type(Atom_obj) :: p1, p2
-      real :: output_force
-      interface 
-          real function compute_force(p1, p2)
-              import :: Atom_obj
-              type(Atom_obj), intent(in) :: p1, p2
-          end function compute_force
-      end interface
-      output_force = compute_force(p1, p2) 
-   end function init_force
+    dx = p2%r - p1%r
     
-    function compute_force(p1,p2) 
-        type(Atom_obj), intent(in) :: p1, p2
-        real :: distance, compute_force, force
-        real,allocatable:: dx(:)
-        integer:: i, dim
-        
-        dim = size(p1%r)
-        allocate(dx(dim))
-        
-        dx = p2%r - p1%r
-        
-        do i = 1, dim
-            if (abs(dx(i)) > 0.5) dx(i) = dx(i) - sign(1.0, dx(i))
+    do i = 1, dim
+        !if (abs(dx(i)) > 0.5) dx(i) = dx(i) - sign(1.0, dx(i))
+        dx = dx - L*nint(dx/L)
+    end do
+
+    compute_force = force_fce_ptr(sqrt(dot_product(dx, dx)))
+    
+end function
+!----------------------------------------------------
+subroutine compute_forces(particles) 
+    type(Atom_obj), dimension(:) :: particles
+    real :: force
+    integer :: n, i, j
+    
+    n = size(particles)
+
+    do i = 1, n
+        particles(i)%f = [0.0, 0.0, 0.0]
+    end do
+
+    do i = 1, n-1
+        do j = i + 1, n
+            ! forces(i, :) = forces(i, :) + compute_force(particles(i)%Atom_obj, particles(j)%Atom_obj)
+            ! forces(j, :) = forces(j, :) - compute_force(particles(i)%Atom_obj, particles(j)%Atom_obj)
+            force = compute_force(particles(i), particles(j))
+            particles(i)%f = particles(i)%f + force
+            particles(j)%f = particles(j)%f - force
         end do
-
-        distance = sqrt(sum(dx**2))
-
-        !Here i should somehow call general func that will later respond to LJ, but how? 
-        
-    end function
-    
-    subroutine compute_forces(particles, n, forces) 
-        type(particle_obj), dimension(:) :: particles
-        real, dimension(:,:) :: forces
-        integer :: n, i, j
-        
-        do i = 1, n
-            forces(i, :) = 0.0
-            do j = i + 1, n
-                forces(i, :) = forces(i, :) + compute_force(particles(i)%Atom_obj, particles(j)%Atom_obj)
-                forces(j, :) = forces(j, :) - compute_force(particles(i)%Atom_obj, particles(j)%Atom_obj)
-            end do
-        end do
-    end subroutine compute_forces 
+    end do
+end subroutine compute_forces 
 
 end module
