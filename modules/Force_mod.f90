@@ -1,4 +1,4 @@
-module ForcesComputation_mod
+module Force_mod
 use Atom_mod
 implicit none 
 private

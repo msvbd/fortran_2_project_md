@@ -1,7 +1,7 @@
 program MD
 use Atom_mod
 use Box_mod
-use ForcesComputation_mod
+use Force_mod
 implicit none
 
 contains
