@@ -1,55 +1,55 @@
 module Box_mod
 use Atom_mod
 implicit none 
-    private 
-    
-    public :: Box_obj
-    
-    type Box_obj
-        real :: L(3) !of the box
-        integer:: n !count of atoms
-        type(Atom_obj), allocatable :: atoms(:)
+private 
 
-        contains
-            procedure :: init_atoms
+public :: Box_obj
 
-    end type Box_obj
-
-    interface Box_obj
-        module procedure create_box
-    end interface Box_obj
+type Box_obj
+    real :: L(3) !of the box
+    integer:: n !count of atoms
+    type(Atom_obj), allocatable :: atoms(:)
 
     contains
+        procedure :: init_atoms
 
-    type(Box_obj) function create_box(L)
-        real, dimension(3) :: L
-        type(Box_obj) :: box
+end type Box_obj
 
-        box%L = L
-        box%n = 0
+interface Box_obj
+    module procedure create_box
+end interface Box_obj
 
-        create_box = box
-    end function create_box
+contains
+!=============================================
+type(Box_obj) function create_box(L)
+    real, dimension(3) :: L
+    type(Box_obj) :: box
 
-    subroutine init_atoms(this, atom_count)
-        class(Box_obj),intent(inout) :: this
-        integer,intent(in) :: atom_count
-        integer :: i
-        real :: r(3)=[0.,0.,0.], v(3)=[0.,0.,0.], mass = 1.
-        
-        this%n = atom_count
+    box%L = L
+    box%n = 0
 
-        allocate(this%atoms(atom_count))
+    create_box = box
+end function create_box
 
-        do i = 1, atom_count
-            ! Initialize the atom's position
-            ! the code will be here
+subroutine init_atoms(this, atom_count)
+    class(Box_obj),intent(inout) :: this
+    integer,intent(in) :: atom_count
+    integer :: i
+    real :: r(3)=[0.,0.,0.], v(3)=[0.,0.,0.], mass = 1.
+    
+    this%n = atom_count
 
-            ! Initialize the atom's velocity
-            ! the code will be here
+    allocate(this%atoms(atom_count))
 
-            this%atoms(i) = Atom_obj(r, v, mass)
-        end do
+    do i = 1, atom_count
+        ! Initialize the atom's position
+        ! the code will be here
 
-    end subroutine 
+        ! Initialize the atom's velocity
+        ! the code will be here
+
+        this%atoms(i) = Atom_obj(r, v, mass)
+    end do
+
+end subroutine 
 end module
