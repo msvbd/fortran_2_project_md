@@ -1,11 +1,19 @@
 program MD
-use Atom_mod
 use Box_mod
 use Force_mod
 implicit none
 
+type(Box_obj) :: box
+
+box = Box_obj([10.0, 10.0, 10.0])
+call box%init_atoms(10)
+
+call init_force(lennard_jones, box);
+
+
+
 contains
-        
+!====================================================
 function lennard_jones(distance)
     real, intent(in) :: distance
     real :: lennard_jones
