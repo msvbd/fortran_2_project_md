@@ -3,14 +3,34 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "gfortran build active file",
+            "label": "build module",
+            "command": "/usr/bin/gfortran",
+            "args": [
+                "-c",
+                "${file}"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}/modules"
+            },
+            "problemMatcher": [
+                "$gcc"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "label": "build main",
             "command": "/usr/bin/gfortran",
             "args": [
                 "-g",
                 "${file}",
                 "-o",
                 "${fileDirname}/${fileBasenameNoExtension}",
-                "-J${workspaceFolder}/modules" // This line tells the compiler where to find the module files
+                "-J${workspaceFolder}/modules",
+                "${workspaceFolder}/modules/*.o"
             ],
             "options": {
                 "cwd": "${workspaceFolder}"
