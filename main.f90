@@ -3,14 +3,23 @@ use Box_mod
 use Force_mod
 implicit none
 
-type(Box_obj) :: box
+real, parameter :: box_length = 10.0
 
-box = Box_obj([10.0, 10.0, 10.0])
+type(Box_obj) :: box
+integer :: t
+
+box = Box_obj(box_length, 0.001)
 call box%init_atoms(10)
 
-call init_force(lennard_jones, box);
+call init_force(lennard_jones, box_length)
 
-
+do t = 1, 10000
+    call box%update()
+    if(mod(t,100)==0) then
+        print*, "t = ", t
+        call box%write_xyz("output.xyz")
+    end if
+end do
 
 contains
 !====================================================

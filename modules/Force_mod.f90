@@ -1,6 +1,5 @@
 module Force_mod
 use Atom_mod
-use Box_mod
 implicit none 
 private
 
@@ -19,12 +18,12 @@ public :: init_force, compute_forces
 contains
 !====================================================
 ! function set the force_fce_ptr to the function that will be used to compute the force
-subroutine init_force(f_fce, box)
+subroutine init_force(f_fce, L_in)
     procedure(force_fce) :: f_fce
-    type(Box_obj), intent(in) :: box
+    real, intent(in) :: L_in
 
     force_fce_ptr => f_fce
-    L = box%L
+    L = [L_in, L_in, L_in]
     
 end subroutine init_force
 !----------------------------------------------------
@@ -54,6 +53,7 @@ subroutine compute_forces(particles)
     n = size(particles)
 
     do i = 1, n
+        particles(i)%f_old = particles(i)%f
         particles(i)%f = [0.0, 0.0, 0.0]
     end do
 

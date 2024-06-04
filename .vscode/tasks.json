@@ -1,47 +1,102 @@
 {
-    "version": "2.0.0",
-    "tasks": [
-        {
-            "type": "shell",
-            "label": "build module",
-            "command": "/usr/bin/gfortran",
-            "args": [
-                "-c",
-                "${file}"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}/modules"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
-        },
-        {
-            "type": "shell",
-            "label": "build main",
-            "command": "/usr/bin/gfortran",
-            "args": [
-                "-g",
-                "${file}",
-                "-o",
-                "${fileDirname}/${fileBasenameNoExtension}",
-                "-J${workspaceFolder}/modules",
-                "${workspaceFolder}/modules/*.o"
-            ],
-            "options": {
-                "cwd": "${workspaceFolder}"
-            },
-            "problemMatcher": [
-                "$gcc"
-            ],
-            "group": {
-                "kind": "build",
-                "isDefault": true
-            }
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "shell",
+      "label": "build module",
+      "command": "/usr/bin/gfortran",
+      "args": ["-c", "${file}"],
+      "options": {
+        "cwd": "${workspaceFolder}/modules"
+      },
+      "problemMatcher": ["$gcc"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "shell",
+      "label": "build all modules",
+      "command": "/usr/bin/gfortran",
+      "args": [
+        "-c",
+        "${workspaceFolder}/modules/Atom.f90",
+        "${workspaceFolder}/modules/Force_mod.f90",
+        "${workspaceFolder}/modules/Box.f90",
+        "-J${workspaceFolder}/modules"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}/modules"
+      },
+      "problemMatcher": ["$gcc"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "shell",
+      "label": "build main",
+      "command": "/usr/bin/gfortran",
+      "args": [
+        "-g",
+        "${workspaceFolder}/main.f90",
+        "-o",
+        "main",
+        "-J${workspaceFolder}/modules",
+        "${workspaceFolder}/modules/*.o"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": ["$gcc"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "shell",
+      "label": "clean",
+      "command": "rm",
+      "args": [
+        "${workspaceFolder}/modules/*.mod",
+        "${workspaceFolder}/modules/*.o",
+        "${workspaceFolder}/*.mod",
+        "${workspaceFolder}/*.o",
+        "${workspaceFolder}/main"
+      ],
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "none",
+        "isDefault": true
+      }
+    },
+    {
+      "type": "shell",
+      "label": "run",
+      "command": "${workspaceFolder}/main",
+      "options": {
+        "cwd": "${workspaceFolder}"
+      },
+      "problemMatcher": [],
+      "group": {
+        "kind": "none",
+        "isDefault": true
+      }
+    },
+    {
+        "type": "shell",
+        "label": "build all and run",
+        "dependsOn": ["build all modules", "build main", "run"],
+        "group": {
+            "kind": "build",
+            "isDefault": true
         }
-    ]
+    }
+  ]
 }

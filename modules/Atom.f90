@@ -5,7 +5,7 @@ implicit none
     public:: Atom_obj
         
     type Atom_obj
-        real :: r(3), v(3), f(3)
+        real :: r(3), v(3), f(3), f_old(3)
         real:: mass
     end type Atom_obj 
 
@@ -20,6 +20,7 @@ implicit none
         init%r = r
         init%v = v
         init%f = 0.0
+        init%f_old = 0.0
         init%mass = mass
     end function init
 end module
