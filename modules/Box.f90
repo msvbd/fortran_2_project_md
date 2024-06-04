@@ -52,4 +52,57 @@ subroutine init_atoms(this, atom_count)
     end do
 
 end subroutine 
+
+subroutine compute_position(atoms, box_size, dt)
+ 
+type(Atom_obj), intent(inout) :: atoms(:)
+real, intent(in) :: box_size, dt
+integer :: i,j, n
+
+n = size(atoms)
+        
+do i = 1, n
+            atoms(i)%r = atoms(i)%r + atoms(i)%v * dt + 0.5 * atoms(i)%f * dt**2
+end do
+        
+do i = 1, n
+            do j = 1, 3
+                if (atoms(i)%r(j) < 0.0) then
+                    atoms(i)%r(j) = atoms(i)%r(j) + box_size
+                else if (atoms(i)%r(j) >= box_size) then
+                    atoms(i)%r(j) = atoms(i)%r(j) - box_size
+                end if
+            end do
+        end do
+    
+end subroutine
+
+subroutine compute_velocity(atoms, dt)
+    type(Atom_obj), intent(inout) :: atoms(:)
+    real, intent(in) :: dt
+    integer :: i, j, n
+    real :: force(3)
+
+    n = size(atoms)
+    
+    do i = 1, n
+        force = 0.0
+        do j = 1, n
+            if (i /= j) then
+                force = force + compute_force(atoms(i), atoms(j))
+            end if
+        end do
+
+        atoms(i)%v = atoms(i)%v + 0.5 * (atoms(i)%f + force) * dt
+    end do
+end subroutine
+
+subroutine update(atoms, dt, box_size)
+    type(Atom_obj), intent(inout) :: atoms(:)
+    real, intent(in) :: dt, box_size
+
+    call compute_position(atoms, dt, box_size)
+    call compute_velocity(atoms, dt) 
+end subroutine update
+
 end module
