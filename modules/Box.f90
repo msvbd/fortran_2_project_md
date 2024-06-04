@@ -55,26 +55,26 @@ end subroutine
 
 subroutine compute_position(atoms, box_size, dt)
  
-type(Atom_obj), intent(inout) :: atoms(:)
-real, intent(in) :: box_size, dt
-integer :: i,j, n
+    type(Atom_obj), intent(inout) :: atoms(:)
+    real, intent(in) :: box_size, dt
+    integer :: i,j, n
 
-n = size(atoms)
-        
-do i = 1, n
-            atoms(i)%r = atoms(i)%r + atoms(i)%v * dt + 0.5 * atoms(i)%f * dt**2
-end do
-        
-do i = 1, n
-            do j = 1, 3
-                if (atoms(i)%r(j) < 0.0) then
-                    atoms(i)%r(j) = atoms(i)%r(j) + box_size
-                else if (atoms(i)%r(j) >= box_size) then
-                    atoms(i)%r(j) = atoms(i)%r(j) - box_size
-                end if
-            end do
+    n = size(atoms)
+            
+    do i = 1, n
+        atoms(i)%r = atoms(i)%r + atoms(i)%v * dt + 0.5 * atoms(i)%f * dt**2
+    end do
+            
+    do i = 1, n
+        do j = 1, 3
+            if (atoms(i)%r(j) < 0.0) then
+                atoms(i)%r(j) = atoms(i)%r(j) + box_size
+            else if (atoms(i)%r(j) >= box_size) then
+                atoms(i)%r(j) = atoms(i)%r(j) - box_size
+            end if
         end do
-    
+    end do
+        
 end subroutine
 
 subroutine compute_velocity(atoms, dt)
